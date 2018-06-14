@@ -1,4 +1,9 @@
-function fix(a,b=3) {var n = (a+Number.EPSILON).toFixed(b); if(n>=0) n = ' '+n; return n+'\t';}
+function fix(a,b=3) {
+	var n = (a+Number.EPSILON).toFixed(b);
+	if(n==0) n = '0.000'; // avoid problems with -0
+	if(n>=0) n = ' '+n;
+	return n+'\t';
+}
 function dump(mesh){
 console.log('dxdt:');
 for(let i=0; i < Math.max(mesh.state.x.m,mesh.state.u(mesh.state.x).m); i++){
