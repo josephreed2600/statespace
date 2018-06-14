@@ -163,4 +163,7 @@ function test() {cube.state.setpoint = 10 - cube.state.setpoint;}
 $(function(){
 	document.body.appendChild( renderer.domElement );
 	animate();
+	console.log("'cube' is the object, 'cube.state' has SS representation");
+	console.log("test() changes setpoint by 10, for quick testing of values");
+	console.log("dump(cube) displays the current state equations of the system");
 });
