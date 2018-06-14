@@ -135,12 +135,16 @@ var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHe
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
+camera.position.set(-5,5,5);
+camera.lookAt(new THREE.Vector3(5,0,0));
+/**
 camera.rotation.x = 0.6;
 camera.rotation.y = -0.6;
 camera.rotation.z = -0.4;
 camera.position.x = -1;
 camera.position.y = -4;
 camera.position.z = 5;
+/**/
 /////////////////////
 
 // Make a cube
