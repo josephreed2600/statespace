@@ -166,4 +166,6 @@ $(function(){
 	console.log("'cube' is the object, 'cube.state' has SS representation");
 	console.log("test() changes setpoint by 10, for quick testing of values");
 	console.log("dump(cube) displays the current state equations of the system");
+	console.log("https://github.com/josephreed2600/statespace");
+	console.log("Physical values come from http://blog.wesleyac.com/posts/intro-to-control-part-six-pole-placement");
 });
