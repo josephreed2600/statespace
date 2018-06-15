@@ -27,8 +27,8 @@ var massSpringModel = {
 // Physical characteristics of system
 	phys: {
 		desc: "mass on spring",
-//		_m: 1,      // kg       // mass of weight on spring                (*****   1   *****)
-		_m: 100,    // kg       // mass of weight on spring         Increasing mass makes system harder to move, which helps
+		_m: 1,      // kg       // mass of weight on spring                (*****   1   *****)
+//		_m: 100,    // kg       // mass of weight on spring         Increasing mass makes system harder to move, which helps
 		_k: 0.4,    // N/m      // spring constant (strength of spring)
 		_c: 0.3,    // N/m/s    // damping coefficient (essentially friction)
 		m: function(){return this._m;},
@@ -74,8 +74,8 @@ var massSpringModel = {
 		// 0i because we want no oscillation
 		// place(A,B,-2.5,-2.5)
 		// TODO: Implement pole placement
-//		_poles: [5.85, 4.7],  //                                           (*****   2   *****)
-		_poles: [4, 40],      //  Hand-tuned PD values, because poles don't work even with increased mass
+		_poles: [5.85, 4.7],  //                                           (*****   2   *****)
+//		_poles: [4, 40],      //  Hand-tuned PD values, because poles don't work even with increased mass
 		poles: function(){return this._poles;}
 	},
 	K: function(){return create([ this.k.poles() ]);},
