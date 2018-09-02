@@ -20,7 +20,8 @@ Model of a mass on a spring
 		=                  ([  0   ]  -  [  vel  ])
 
 */
-
+var kFPS = 60;
+function fps() {return kFPS;}
 with(Matrix) { // e.g., Matrix.add() is now just add()
 var massSpringModel = {
 ////////////////
@@ -37,25 +38,34 @@ var massSpringModel = {
 	},
 
 ////////////////
-// Plant
-// State matrix
-	A: function(){return create([[ 0,	1],
+// System (continuous)
+	// State matrix
+	Ac: function(){return create([[ 0,	1],
 	                             [ -this.phys.k()/this.phys.m(),	-this.phys.c()/this.phys.m()]]);},
-//	                             [ 0,	0]]);},
-
-// Input matrix
-	B: function(){return create([[ 0   	],
+	// Input matrix
+	Bc: function(){return create([[ 0   	],
 	                             [ 1/this.phys.m()	]]);},
-//	                             [ 0.01	]]);},
 
+	// TODO: Implement Kalman filter
+	// Output matrix
+	Cc: function(){return create([[ 1,	0]]);},
+	// Transmission matrix
+	Dc: function(){return create([[ 0]]);},
+
+	c2d: function(){return discretize(this.Ac().mat,this.Bc().mat,this.Cc().mat,this.Dc().mat,1/fps());},
 ////////////////
-// Observer
-// TODO: Implement Kalman filter
-// Output matrix
-	C: function(){return create([[ 1,	0]]);},
+// System (discrete)
+// dt = 1/60 s
+	// State matrix
+	A: function(){return create(this.c2d().A);},
+	// Input matrix
+	B: function(){return create(this.c2d().B);},
 
-// Transmission matrix
-	D: function(){return create([[ 0]]);},
+	// TODO: Implement Kalman filter
+	// Output matrix
+	C: function(){return create(this.c2d().C);},
+	// Transmission matrix
+	D: function(){return create(this.c2d().D);},
 
 ////////////////
 // Variables
@@ -75,7 +85,6 @@ var massSpringModel = {
 		// place(A,B,-2.5,-2.5)
 		// TODO: Implement pole placement
 		_poles: [5.85, 4.7],  //                                           (*****   2   *****)
-//		_poles: [4, 40],      //  Hand-tuned PD values, because poles don't work even with increased mass
 		poles: function(){return this._poles;}
 	},
 	K: function(){return create([ this.k.poles() ]);},
@@ -93,7 +102,7 @@ var massSpringModel = {
 	// Measure error between current state and goal
 	error: function(){return this.setpoint - this.y.mat[0][0];},
 	// Update the internal state of the actual mesh that we see on the screen
-	update: function(dxdt,x,y){}, // implement in the mesh, same as below
+	update: function(x,y){}, // implement in the mesh, same as below
 	// Measure some aspect of our current state, with some noise
 	sensor: null // implement after stapling to the mesh, becaue it will need to access properties of the mesh
 }; // end of SS representation of the system
@@ -111,10 +120,9 @@ function updateState(mesh) {
 with(mesh.state) {
 with(Matrix) {
 	var input = u(x);
-	dxdt = add(mult(A(),x),mult(B(),input));
-	x    = add(x,dxdt);
+	x = add(mult(A(),x),mult(B(),input));
 	y    = add(mult(C(),x),mult(D(),input)); // pretty sure this is all wrong yo
-	update(dxdt,x,y);
+	update(x,y);
 }
 }
 }
@@ -122,7 +130,8 @@ with(Matrix) {
 
 // https://threejs.org/docs/index.html#manual/introduction/Creating-a-scene
 function animate() {
-	requestAnimationFrame( animate );
+	setTimeout(function(){requestAnimationFrame( animate );},
+		1000/fps());
 	updateState(cube);
 	renderer.render( scene, camera );
 }
@@ -154,8 +163,7 @@ var cube = new THREE.Mesh( geometry, material );
 
 // Add SS model to cube
 cube.state = massSpringModel;
-//cube.state.update = function(dxdt,x,y){cube.position.x = y.mat[0][0];};
-cube.state.update = function(dxdt,x,y){cube.position.x = x.mat[0][0];};
+cube.state.update = function(x,y){cube.position.x = x.mat[0][0];};
 cube.state.sensor = function(){return cube.position.x + (((Math.random()>0.5)?1:-1)*Math.random()/100);} // introduce noise to measurement
 scene.add( cube );
 
